@@ -1,0 +1,23 @@
+# docker compose up --build          -> http://localhost:8787
+# docker compose --profile offline up --build   -> also runs Ollama for a fully offline edit agent
+services:
+  cutline:
+    build: .
+    ports: ["8787:8787"]
+    env_file: [backend/.env]
+    environment:
+      # inside compose, Ollama is reachable by its service name
+      OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
+    volumes: ["cutline-data:/data"]
+    restart: unless-stopped
+
+  ollama:
+    profiles: ["offline"]
+    image: ollama/ollama:latest
+    volumes: ["ollama-models:/root/.ollama"]
+    restart: unless-stopped
+    # first time: docker compose exec ollama ollama pull qwen2.5:7b
+
+volumes:
+  cutline-data:
+  ollama-models:

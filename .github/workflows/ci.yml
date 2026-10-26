@@ -1,0 +1,59 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Install
+        run: |
+          npm ci --prefix backend
+          npm ci --prefix frontend
+
+      - name: Typecheck
+        run: |
+          npm run typecheck --prefix backend
+          npm run typecheck --prefix frontend
+
+      - name: Unit tests (timeline engine, planner, AI layer)
+        run: npm run test:unit --prefix backend
+
+      - name: Build web app
+        run: npm run build --prefix frontend
+
+      - name: End-to-end, no AI keys (built-in planner)
+        working-directory: backend
+        env: { STORAGE_DIR: "${{ runner.temp }}/e2e-rules", PORT: "8787", STT_PROVIDER: none }
+        run: |
+          npm start > server.log 2>&1 &
+          for i in $(seq 60); do curl -sf localhost:8787/api/health && break; sleep 1; done
+          API=http://localhost:8787/api npm test || (cat server.log; exit 1)
+          kill %1
+
+      - name: End-to-end, AI path against the mock provider
+        working-directory: backend
+        env:
+          STORAGE_DIR: "${{ runner.temp }}/e2e-ai"
+          PORT: "8788"
+          LLM_PROVIDER: custom
+          LLM_BASE_URL: http://localhost:9911/v1
+          LLM_MODEL: mock
+          STT_PROVIDER: custom
+          STT_BASE_URL: http://localhost:9911/v1
+        run: |
+          npm run mock-ai > mock.log 2>&1 &
+          npm start > server.log 2>&1 &
+          for i in $(seq 60); do curl -sf localhost:8788/api/health && break; sleep 1; done
+          API=http://localhost:8788/api npm test || (cat server.log; exit 1)

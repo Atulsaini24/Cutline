@@ -1,0 +1,24 @@
+# dependencies and builds
+node_modules/
+dist/
+dist-single/
+*.tsbuildinfo
+
+# secrets: never commit these
+.env
+.env.*
+!.env.example
+
+# local data: database, uploads, renders, downloaded AI models
+backend/storage/
+storage/
+*.db
+*.db-shm
+*.db-wal
+
+# editors and OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

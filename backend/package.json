@@ -1,0 +1,45 @@
+{
+  "name": "cutline-backend",
+  "private": true,
+  "version": "0.3.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx src/selftest.ts",
+    "test:unit": "tsx --test ../shared/tests/timeline.test.ts ../shared/tests/planner.test.ts src/tests/ai.test.ts",
+    "mock-ai": "tsx src/dev/mock-ai.ts"
+  },
+  "dependencies": {
+    "bcryptjs": "2.4.3",
+    "better-sqlite3": "11.5.0",
+    "cors": "2.8.5",
+    "dotenv": "16.4.5",
+    "express": "4.21.1",
+    "ffmpeg-static": "5.2.0",
+    "ffprobe-static": "3.1.0",
+    "jsonwebtoken": "9.0.2",
+    "pg": "8.23.1",
+    "tsx": "4.19.2",
+    "ws": "8.18.0",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "2.4.6",
+    "@types/better-sqlite3": "7.6.11",
+    "@types/cors": "2.8.17",
+    "@types/express": "4.17.21",
+    "@types/jsonwebtoken": "9.0.7",
+    "@types/node": "20.17.6",
+    "@types/pg": "8.23.1",
+    "@types/ws": "8.5.13",
+    "typescript": "5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "optionalDependencies": {
+    "@huggingface/transformers": "4.3.1"
+  }
+}
